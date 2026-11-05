@@ -1,15 +1,16 @@
 import { motion, useScroll, useTransform } from "motion/react";
-import { Star } from "lucide-react";
+import { ArrowUpRight, AtSign, Star } from "lucide-react";
 import { useRef } from "react";
 import { Counter, MaskLine, Reveal, SectionLabel } from "@/components/ui/motion-primitives";
-import { EASE } from "@/lib/utils";
+import { MENU } from "@/data/menu";
+import { CONFIG } from "@/lib/utils";
 
 /* ---------- Processo (seção clara) ---------- */
 const STEPS = [
-  ["Blend moído no dia", "Acém, peito e costela angus. Moemos toda manhã e o que sobra não volta no dia seguinte."],
-  ["Brioche da casa", "Fermentação de 12 horas, assado diariamente e selado na manteiga na hora de montar."],
-  ["Smash a 250°C", "A bola de carne é prensada na chapa bem quente. É isso que cria a crosta caramelizada."],
-  ["Molhos autorais", "Maionese defumada, chipotle e o Molho Brasa. Receitas que você só encontra aqui."],
+  ["Hambúrguer de costela", "A base de quase todo burger da casa. Também tem pernil suíno, linguiça defumada e uma opção sem carne."],
+  ["Pão especial", "Todo burger vem no pão especial. O Street Churrasco vai na baguete, com lascas de alcatra acebolada."],
+  ["Hot dog de 25 cm", "Duas salsichas, molho vermelho e batata palha. Sete sabores, do simples ao de alcatra com catupiry."],
+  ["Porções pra dividir", "Fritas, rústica, polenta e anéis de cebola até 1 kg. A porção mista chega a 2 kg."],
 ] as const;
 
 export function Process() {
@@ -22,17 +23,17 @@ export function Process() {
       <div className="wrap grid gap-16 lg:grid-cols-[0.9fr_1.1fr]">
         <div className="lg:sticky lg:top-32 lg:self-start">
           <SectionLabel index="03" className="text-sauce">
-            Processo
+            A casa
           </SectionLabel>
           <h2 className="font-display text-title font-black uppercase leading-[0.86] md:text-8xl">
-            <MaskLine onView>Nada</MaskLine>
-            <MaskLine onView delay={0.1}>congelado.</MaskLine>
+            <MaskLine onView>Burger</MaskLine>
+            <MaskLine onView delay={0.1}>de verdade.</MaskLine>
             <MaskLine onView delay={0.2}>
-              <span className="text-sauce">Nada pronto.</span>
+              <span className="text-sauce">Do jeito da casa.</span>
             </MaskLine>
           </h2>
           <Reveal delay={0.3}>
-            <p className="mt-8 max-w-sm text-lg text-ink/70">Cada burger é montado na hora em que você pede. Por isso chega do jeito que saiu da chapa.</p>
+            <p className="mt-8 max-w-sm text-lg text-ink/70">Carne de costela, pão especial e os molhos da casa: ervas finas, alho e BBQ. É isso que segura o cardápio inteiro.</p>
           </Reveal>
         </div>
 
@@ -52,10 +53,10 @@ export function Process() {
 
       <div className="wrap mt-24 grid grid-cols-2 gap-y-10 border-t border-ink/15 pt-12 md:grid-cols-4">
         {[
-          { to: 52000, suffix: "+", label: "burgers servidos" },
-          { to: 4.9, decimals: 1, label: "nota média no iFood" },
-          { to: 98, suffix: "%", label: "voltam a pedir" },
-          { to: 32, suffix: " min", label: "tempo médio de entrega" },
+          { to: MENU.filter((i) => i.cat === "burger").length, suffix: "", label: "burgers no cardápio" },
+          { to: MENU.filter((i) => i.cat === "dog").length, label: "sabores de hot dog" },
+          { to: CONFIG.rating, decimals: 1, label: "nota no Google" },
+          { to: CONFIG.reviews, label: "avaliações no Google" },
         ].map((c) => (
           <div key={c.label}>
             <Counter to={c.to} decimals={c.decimals} suffix={c.suffix} className="block font-display text-[clamp(2.4rem,11vw,3.75rem)] font-black text-sauce md:text-7xl" />
@@ -67,122 +68,64 @@ export function Process() {
   );
 }
 
-/* ---------- Avaliações (marquee) ---------- */
-const REVIEWS = [
-  ["Mariana C.", "iFood", "Melhor smash da cidade, sem exagero. Chegou quente, crocante e o cheddar escorrendo."],
-  ["Rafael S.", "Google", "O Brasa Bacon é absurdo. Bacon no maple com a maionese defumada… virei cliente."],
-  ["Juliana P.", "Instagram", "Embalagem caprichada, nada amassado. O milkshake de Ovomaltine é obrigatório."],
-  ["Thiago M.", "iFood", "Pedi o Triplo Monstro achando que não ia dar conta. Dei conta. Volto semana que vem."],
-  ["Camila R.", "Google", "Atendimento rápido e o pão é outro nível. Dá pra sentir que é feito na casa."],
-  ["Bruno A.", "iFood", "Chegou antes do prazo e ainda quente. O Diablo arde na medida certa."],
-] as const;
-
+/* ---------- Avaliações (dados públicos do Google e Instagram) ---------- */
 export function Reviews() {
-  const list = [...REVIEWS, ...REVIEWS];
+  const stats = [
+    { value: CONFIG.rating.toLocaleString("pt-BR"), label: "de 5 estrelas no Google", stars: true },
+    { value: String(CONFIG.reviews), label: "avaliações no Google" },
+    { value: "+4,8 mil", label: "seguidores no Instagram" },
+  ];
   return (
     <section id="avaliacoes" className="overflow-hidden py-28 md:py-36">
-      <div className="wrap mb-14 flex flex-wrap items-end justify-between gap-6">
-        <div>
-          <SectionLabel index="04" className="text-mustard">
-            Avaliações
-          </SectionLabel>
-          <h2 className="font-display text-title font-black uppercase leading-[0.88] md:text-8xl">
-            <MaskLine onView>Quem comeu,</MaskLine>
-            <MaskLine onView delay={0.1}>
-              <span className="text-outline">voltou.</span>
-            </MaskLine>
-          </h2>
-        </div>
-        <Reveal className="text-right">
-          <p className="font-display text-8xl font-black leading-none text-mustard">4,9</p>
-          <p className="text-sm text-cream/60">média de +2.300 avaliações</p>
-        </Reveal>
-      </div>
+      <div className="wrap">
+        <SectionLabel index="04" className="text-mustard">
+          Avaliações
+        </SectionLabel>
+        <h2 className="font-display text-title font-black uppercase leading-[0.88] md:text-8xl">
+          <MaskLine onView>A nota de</MaskLine>
+          <MaskLine onView delay={0.1}>
+            <span className="text-outline">quem já comeu.</span>
+          </MaskLine>
+        </h2>
 
-      <div className="group flex">
-        <div className="flex shrink-0 animate-marquee gap-6 pr-6 [animation-duration:60s] group-hover:[animation-play-state:paused]">
-          {list.map(([name, src, text], i) => (
-            <figure key={i} className="w-[min(340px,82vw)] shrink-0 rounded-3xl border border-cream/10 bg-coal p-6 md:w-[400px] md:p-7">
-              <div className="flex text-mustard">
-                {Array.from({ length: 5 }, (_, k) => (
-                  <Star key={k} size={16} fill="currentColor" strokeWidth={0} />
-                ))}
+        <div className="mt-14 grid gap-4 md:grid-cols-3">
+          {stats.map((s, i) => (
+            <Reveal key={s.label} delay={i * 0.1}>
+              <div className="h-full rounded-3xl border border-cream/10 bg-coal p-7">
+                {s.stars && (
+                  <div className="mb-4 flex text-mustard">
+                    {Array.from({ length: 5 }, (_, k) => (
+                      <Star key={k} size={18} fill="currentColor" strokeWidth={0} />
+                    ))}
+                  </div>
+                )}
+                <p className="font-display text-7xl font-black leading-none text-mustard">{s.value}</p>
+                <p className="mt-2 text-cream/60">{s.label}</p>
               </div>
-              <blockquote className="mt-5 text-lg leading-snug">“{text}”</blockquote>
-              <figcaption className="mt-6 flex items-center gap-3 text-sm">
-                <span className="grid size-10 place-items-center rounded-full bg-sauce font-display text-lg font-bold">{name[0]}</span>
-                <span>
-                  <b className="block">{name}</b>
-                  <span className="text-cream/50">via {src}</span>
-                </span>
-              </figcaption>
-            </figure>
+            </Reveal>
           ))}
         </div>
-      </div>
-    </section>
-  );
-}
 
-/* ---------- Fidelidade ---------- */
-export function Loyalty() {
-  const filled = 7;
-  return (
-    <section id="fidelidade" className="relative overflow-hidden bg-sauce py-28 md:py-32">
-      <div className="wrap grid items-center gap-16 lg:grid-cols-2">
-        <div>
-          <SectionLabel index="05">Clube Brasa</SectionLabel>
-          <h2 className="font-display text-title font-black uppercase leading-[0.86] md:text-8xl">
-            <MaskLine onView>Junte 10 selos.</MaskLine>
-            <MaskLine onView delay={0.1}>
-              <span className="text-ink">O próximo é</span>
-            </MaskLine>
-            <MaskLine onView delay={0.2}>
-              <span className="text-ink">por nossa conta.</span>
-            </MaskLine>
-          </h2>
-          <Reveal delay={0.2}>
-            <p className="mt-8 max-w-md text-lg text-cream/85">Cada burger vale um selo. Cadastre seu WhatsApp no primeiro pedido e acompanhe por lá. Aniversariante do mês ganha milkshake.</p>
-          </Reveal>
-        </div>
-
-        <motion.div
-          className="mx-auto w-full max-w-md rounded-[2rem] bg-paper p-6 text-ink sm:p-8 shadow-[0_50px_80px_-30px_rgba(0,0,0,.6)]"
-          initial={{ rotate: 0, y: 60, opacity: 0 }}
-          whileInView={{ rotate: 3, y: 0, opacity: 1 }}
-          viewport={{ once: true, margin: "-80px" }}
-          transition={{ duration: 1, ease: EASE }}
-        >
-          <div className="flex items-baseline justify-between border-b border-dashed border-ink/20 pb-4">
-            <span className="font-display text-3xl font-black uppercase">
-              Brasa<span className="text-sauce">&amp;</span>Blend
-            </span>
-            <span className="text-xs uppercase tracking-[0.2em] text-ink/50">Cartão fidelidade</span>
+        <Reveal delay={0.2}>
+          <div className="mt-10 flex flex-wrap gap-4">
+            <a
+              href={CONFIG.mapsUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="group inline-flex items-center gap-2 rounded-full bg-cream px-6 py-3.5 font-semibold text-ink transition hover:bg-mustard"
+            >
+              Ler as avaliações no Google <ArrowUpRight size={18} className="transition group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+            </a>
+            <a
+              href={CONFIG.instagram}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-2 rounded-full border border-cream/20 px-6 py-3.5 font-semibold transition hover:border-mustard hover:text-mustard"
+            >
+              <AtSign size={18} /> streetburgerjaragua
+            </a>
           </div>
-          <div className="mt-6 grid grid-cols-5 gap-2 sm:gap-3">
-            {Array.from({ length: 10 }, (_, i) => {
-              const on = i < filled;
-              const prize = i === 9;
-              return (
-                <motion.span
-                  key={i}
-                  className={`grid aspect-square place-items-center rounded-full font-display text-[10px] font-black sm:text-sm ${
-                    on ? "bg-sauce text-cream" : prize ? "border-2 border-sauce text-sauce" : "border-2 border-dashed border-ink/20 text-ink/30"
-                  }`}
-                  initial={on ? { scale: 0, rotate: -40 } : { opacity: 0 }}
-                  whileInView={on ? { scale: 1, rotate: -12 } : { opacity: 1 }}
-                  viewport={{ once: true }}
-                  transition={on ? { type: "spring", stiffness: 300, damping: 12, delay: 0.4 + i * 0.12 } : { delay: 0.4 + i * 0.12 }}
-                >
-                  {on ? "B&B" : prize ? "GRÁTIS" : i + 1}
-                </motion.span>
-              );
-            })}
-          </div>
-          <p className="mt-6 text-sm">
-            Faltam <b className="text-sauce">3 selos</b> para o seu burger grátis.
-          </p>
-        </motion.div>
+        </Reveal>
       </div>
     </section>
   );

@@ -3,6 +3,9 @@ import { CONFIG } from "@/lib/utils";
 
 const pad = (n: number) => String(n).padStart(2, "0");
 
+const DAYS = ["domingo", "segunda", "terça", "quarta", "quinta", "sexta", "sábado"];
+const hhmm = (m: number) => `${Math.floor(m / 60)}h${m % 60 ? pad(m % 60) : ""}`;
+
 function computeStatus() {
   const now = new Date();
   const mins = now.getHours() * 60 + now.getMinutes();
@@ -12,8 +15,11 @@ function computeStatus() {
     const left = close - mins;
     return { open: true, label: `Aberto agora · fecha em ${Math.floor(left / 60)}h${pad(left % 60)}` };
   }
-  if (!closedToday && mins < open) return { open: false, label: "Abre hoje às 18h · agende seu pedido" };
-  return { open: false, label: "Fechado agora · abrimos ter a dom às 18h" };
+  if (!closedToday && mins < open) return { open: false, label: `Abre hoje às ${hhmm(open)} · agende seu pedido` };
+  let next = (now.getDay() + 1) % 7;
+  while (closedDays.includes(next)) next = (next + 1) % 7;
+  const when = next === (now.getDay() + 1) % 7 ? "amanhã" : DAYS[next];
+  return { open: false, label: `Fechado agora · abrimos ${when} às ${hhmm(open)}` };
 }
 
 /** Status aberto/fechado calculado pelo horário real. */
@@ -24,25 +30,4 @@ export function useOpenStatus() {
     return () => clearInterval(t);
   }, []);
   return status;
-}
-
-/** Tempo restante até 23:59:59 de hoje (fim do combo do dia). */
-export function useCountdownToMidnight() {
-  const compute = () => {
-    const now = new Date();
-    const end = new Date(now);
-    end.setHours(23, 59, 59, 999);
-    const diff = Math.max(0, end.getTime() - now.getTime());
-    return {
-      h: pad(Math.floor(diff / 3.6e6)),
-      m: pad(Math.floor((diff % 3.6e6) / 6e4)),
-      s: pad(Math.floor((diff % 6e4) / 1000)),
-    };
-  };
-  const [t, setT] = useState(compute);
-  useEffect(() => {
-    const id = setInterval(() => setT(compute()), 1000);
-    return () => clearInterval(id);
-  }, []);
-  return t;
 }

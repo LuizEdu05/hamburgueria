@@ -2,15 +2,14 @@ import { motion, useInView } from "motion/react";
 import { Plus } from "lucide-react";
 import { useRef } from "react";
 import { useNavigate } from "react-router";
-import { Magnetic, Reveal, RollingDigits, SectionLabel, SplitWords } from "@/components/ui/motion-primitives";
-import { MENU_BY_ID } from "@/data/menu";
-import { useCountdownToMidnight } from "@/hooks/use-time";
+import { Magnetic, Reveal, SectionLabel, SplitWords } from "@/components/ui/motion-primitives";
+import { FEATURED_ID, MENU_BY_ID } from "@/data/menu";
 import { brl, EASE } from "@/lib/utils";
 
+/** Destaque da casa: o burger mais carregado do cardápio. */
 export function Combo() {
-  const combo = MENU_BY_ID["combo-dia"];
+  const item = MENU_BY_ID[FEATURED_ID];
   const navigate = useNavigate();
-  const t = useCountdownToMidnight();
   const imgRef = useRef<HTMLDivElement>(null);
   const imgInView = useInView(imgRef, { once: true, margin: "-100px" });
 
@@ -25,8 +24,8 @@ export function Combo() {
             transition={{ duration: 1.2, ease: EASE }}
           >
             <motion.img
-              src={combo.img}
-              alt="Combo do dia: smash duplo com fritas"
+              src={item.img}
+              alt={`${item.name} (foto ilustrativa)`}
               className="h-full w-full object-cover"
               initial={{ scale: 1.25 }}
               animate={imgInView ? { scale: 1 } : undefined}
@@ -34,67 +33,54 @@ export function Combo() {
             />
           </motion.div>
           <motion.div
-            className="absolute -right-2 -top-6 grid size-28 place-items-center sm:size-32 rounded-full bg-mustard text-ink md:-right-8 md:size-36"
+            className="absolute -right-2 -top-6 grid size-28 place-items-center rounded-full bg-mustard text-ink sm:size-32 md:-right-8 md:size-36"
             initial={{ scale: 0, rotate: -120 }}
             whileInView={{ scale: 1, rotate: -12 }}
             viewport={{ once: true }}
             transition={{ type: "spring", stiffness: 140, damping: 12, delay: 0.5 }}
           >
             <span className="text-center font-display font-black uppercase leading-[0.85]">
-              <span className="block text-4xl sm:text-5xl">-25%</span>
-              <span className="block text-sm tracking-widest">só hoje</span>
+              <span className="block text-4xl sm:text-5xl">2x</span>
+              <span className="block text-sm tracking-widest">costela</span>
             </span>
           </motion.div>
         </div>
 
         <div>
           <SectionLabel index="01" className="text-mustard">
-            Combo do dia
+            O maior da casa
           </SectionLabel>
           <h2 className="font-display text-title font-black uppercase leading-[0.88] md:text-7xl">
-            <SplitWords text="Smash Duplo, fritas e refri." />
+            <SplitWords text={`${item.name}.`} />
           </h2>
           <Reveal delay={0.2}>
-            <p className="mt-6 max-w-md text-lg text-cream/70">{combo.desc}</p>
+            <p className="mt-6 max-w-md text-lg text-cream/70">{item.tagline} Dois hambúrgueres de costela, bacon crocante em dobro e BBQ.</p>
 
             <div className="mt-8 flex flex-wrap items-end gap-x-4 gap-y-1">
-              <span className="font-display text-[clamp(3.2rem,16vw,4.5rem)] font-black leading-none text-mustard">{brl(combo.price)}</span>
-              <span className="mb-2 text-lg text-smoke line-through">{brl(combo.old!)}</span>
+              <span className="font-display text-[clamp(3.2rem,16vw,4.5rem)] font-black leading-none text-mustard">{brl(item.price)}</span>
             </div>
 
-            <div className="mt-10">
-              <p className="mb-3 text-xs font-semibold uppercase tracking-[0.22em] text-smoke">Acaba em</p>
-              <div className="flex items-end gap-2 font-display text-[clamp(2.8rem,13vw,3.75rem)] font-black leading-none md:text-7xl">
-                <RollingDigits value={t.h} />
-                <span className="pb-2 text-3xl text-smoke">:</span>
-                <RollingDigits value={t.m} />
-                <span className="pb-2 text-3xl text-smoke">:</span>
-                <RollingDigits value={t.s} className="text-sauce" />
-              </div>
-            </div>
-
-            <div className="mt-10 max-w-md">
-              <div className="mb-2 flex justify-between text-sm">
-                <span className="text-cream/70">Vendidos hoje</span>
-                <span className="font-semibold">72%</span>
-              </div>
-              <div className="h-2 overflow-hidden rounded-full bg-char">
-                <motion.div
-                  className="h-full rounded-full bg-linear-to-r from-mustard to-sauce"
-                  initial={{ width: "0%" }}
-                  whileInView={{ width: "72%" }}
+            <ul className="mt-10 flex max-w-md flex-wrap gap-2">
+              {item.ingredients?.map((ing, i) => (
+                <motion.li
+                  key={ing}
+                  className="rounded-full border border-cream/15 px-4 py-2 text-sm text-cream/80"
+                  initial={{ opacity: 0, y: 12, scale: 0.9 }}
+                  whileInView={{ opacity: 1, y: 0, scale: 1 }}
                   viewport={{ once: true }}
-                  transition={{ duration: 1.6, delay: 0.3, ease: EASE }}
-                />
-              </div>
-            </div>
+                  transition={{ duration: 0.5, delay: 0.3 + i * 0.06, ease: EASE }}
+                >
+                  {ing}
+                </motion.li>
+              ))}
+            </ul>
 
             <Magnetic className="mt-10">
               <button
-                onClick={() => navigate(`/pedido?add=${combo.id}`)}
+                onClick={() => navigate(`/pedido?add=${item.id}`)}
                 className="group inline-flex items-center gap-3 rounded-full bg-cream py-4 pl-7 pr-4 font-semibold text-ink transition hover:bg-mustard"
               >
-                Garantir meu combo
+                Quero o {item.name.replace("Street ", "")}
                 <span className="grid size-9 place-items-center rounded-full bg-sauce text-cream transition-transform duration-300 group-hover:rotate-90">
                   <Plus size={18} />
                 </span>

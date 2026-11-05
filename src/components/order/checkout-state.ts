@@ -95,29 +95,24 @@ export function validatePayment(p: Payment, grand: number): Errors {
 
 export interface Totals {
   subtotal: number;
-  discount: number;
-  fee: number;
   grand: number;
-  freeShipping: boolean;
+  /** A taxa de entrega da casa não é pública: é combinada no WhatsApp. */
+  feePending: boolean;
 }
 
-export function computeTotals(subtotal: number, mode: Mode, coupon: string | null): Totals {
-  const discount = coupon ? Math.round(subtotal * CONFIG.couponPct * 100) / 100 : 0;
-  const freeShipping = subtotal >= CONFIG.freeShipping;
-  const fee = mode === "pickup" || freeShipping || subtotal === 0 ? 0 : CONFIG.deliveryFee;
-  return { subtotal, discount, fee, grand: subtotal - discount + fee, freeShipping };
+export function computeTotals(subtotal: number, mode: Mode): Totals {
+  return { subtotal, grand: subtotal, feePending: mode === "delivery" };
 }
 
 export function buildMessage(opts: {
   code: string;
   items: Record<string, number>;
   totals: Totals;
-  coupon: string | null;
   customer: Customer;
   payment: Payment;
   scheduled: boolean;
 }) {
-  const { code, items, totals, coupon, customer: c, payment: p, scheduled } = opts;
+  const { code, items, totals, customer: c, payment: p, scheduled } = opts;
   const lines = Object.entries(items).map(([id, q]) => `${q}x ${MENU_BY_ID[id].name} — ${brl(MENU_BY_ID[id].price * q)}`);
   const address =
     c.mode === "pickup"
@@ -128,15 +123,14 @@ export function buildMessage(opts: {
   const pay = p.method === "cash" && p.change.trim() ? `Dinheiro (troco para ${brl(parseMoney(p.change))})` : PAY_LABEL[p.method];
 
   return [
-    `*Pedido #${code} — Brasa & Blend*`,
+    `*Pedido #${code} — ${CONFIG.fullName}*`,
     scheduled ? "_(enviado fora do horário: preparar na abertura)_" : "",
     "",
     ...lines,
     "",
     `Subtotal: ${brl(totals.subtotal)}`,
-    totals.discount ? `Cupom ${coupon}: -${brl(totals.discount)}` : "",
-    c.mode === "delivery" ? `Entrega: ${totals.fee ? brl(totals.fee) : "grátis"}` : "",
-    `*Total: ${brl(totals.grand)}*`,
+    `*Total dos itens: ${brl(totals.grand)}*`,
+    c.mode === "delivery" ? "Taxa de entrega: a combinar" : "",
     "",
     `Pagamento: ${pay}`,
     p.notes.trim() ? `Obs.: ${p.notes.trim()}` : "",

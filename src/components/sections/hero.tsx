@@ -4,8 +4,10 @@ import { useRef } from "react";
 import { Link } from "react-router";
 import { MaskLine, Magnetic } from "@/components/ui/motion-primitives";
 import { MeltLine } from "@/components/ui/melt-text";
-import { HERO_IMG } from "@/data/menu";
-import { EASE } from "@/lib/utils";
+import { FEATURED_ID, HERO_IMG, MENU_BY_ID } from "@/data/menu";
+import { brl, CONFIG, EASE } from "@/lib/utils";
+
+const featured = MENU_BY_ID[FEATURED_ID];
 
 function RotatingBadge() {
   return (
@@ -22,7 +24,7 @@ function RotatingBadge() {
         </defs>
         <circle cx="100" cy="100" r="98" className="fill-sauce" />
         <text className="fill-cream font-display text-[17px] font-bold uppercase tracking-[0.2em]">
-          <textPath href="#badge-circle">Blend moído no dia · Smash na chapa · </textPath>
+          <textPath href="#badge-circle">Burger de verdade · Jaraguá do Sul · </textPath>
         </text>
       </motion.svg>
       <div className="absolute inset-0 grid place-items-center">
@@ -50,13 +52,13 @@ export function Hero() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, ease: EASE }}
           >
-            <span className="h-px w-10 bg-mustard" /> Smash burger artesanal
+            <span className="h-px w-10 bg-mustard" /> Burger &amp; hot dog · Jaraguá do Sul
           </motion.p>
 
           <h1 className="font-display text-[clamp(4.2rem,10.5vw,9.5rem)] font-black uppercase leading-[0.82] tracking-[-0.01em] [container-type:inline-size]">
-            <MaskLine delay={0.1}>Smash</MaskLine>
+            <MaskLine delay={0.1}>Burger</MaskLine>
             <MaskLine delay={0.2}>
-              <span className="text-outline">crocante,</span>
+              <span className="text-outline">de verdade,</span>
             </MaskLine>
             <MaskLine delay={0.3}>queijo</MaskLine>
             <MeltLine text="escorrendo." delay={0.4} className="text-mustard" />
@@ -68,7 +70,7 @@ export function Hero() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.9, delay: 0.6, ease: EASE }}
           >
-            Blend angus moído toda manhã, prensado na chapa a 250°C e servido no brioche que a gente assa aqui. Do jeito que hambúrguer tem que ser.
+            Hambúrguer de costela no pão especial, hot dog de 25 cm com duas salsichas e porções pra dividir. No Centro de Jaraguá, de quarta a segunda.
           </motion.p>
 
           <motion.div
@@ -86,7 +88,7 @@ export function Hero() {
               </Link>
             </Magnetic>
             <a href="#combo" className="group inline-flex items-center gap-2 font-semibold">
-              <span className="border-b border-cream/30 pb-0.5 transition group-hover:border-mustard group-hover:text-mustard">Ver combo do dia</span>
+              <span className="border-b border-cream/30 pb-0.5 transition group-hover:border-mustard group-hover:text-mustard">Ver o maior da casa</span>
               <ArrowDownRight size={18} className="transition group-hover:translate-x-0.5 group-hover:translate-y-0.5" />
             </a>
           </motion.div>
@@ -103,10 +105,10 @@ export function Hero() {
                   <Star key={i} size={14} fill="currentColor" strokeWidth={0} />
                 ))}
               </span>
-              <b className="text-cream">4,9</b> · +2.300 avaliações no iFood
+              <b className="text-cream">{CONFIG.rating.toLocaleString("pt-BR")}</b> · {CONFIG.reviews} avaliações no Google
             </span>
             <span className="flex items-center gap-2">
-              <Clock size={15} /> Entrega em 30–40 min
+              <Clock size={15} /> Entrega em ~{CONFIG.deliveryMin} min
             </span>
           </motion.div>
         </motion.div>
@@ -122,7 +124,7 @@ export function Hero() {
             <motion.div className="absolute inset-0" style={{ y: imgY, scale: imgScale }}>
               <motion.img
                 src={HERO_IMG}
-                alt="Smash burger duplo com cheddar derretido"
+                alt="Hambúrguer com queijo derretido (foto ilustrativa)"
                 className="h-full w-full object-cover"
                 initial={{ scale: 1.3 }}
                 animate={{ scale: 1 }}
@@ -148,9 +150,9 @@ export function Hero() {
             transition={{ type: "spring", stiffness: 100, damping: 14, delay: 1.2 }}
           >
             <motion.div animate={{ y: [0, -8, 0] }} transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-sauce">O mais pedido</p>
-              <p className="font-display text-3xl font-black uppercase leading-none">Smash Duplo</p>
-              <p className="mt-1 text-sm font-semibold">R$ 38,90</p>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-sauce">O maior da casa</p>
+              <p className="font-display text-3xl font-black uppercase leading-none">{featured.name}</p>
+              <p className="mt-1 text-sm font-semibold">{brl(featured.price)}</p>
             </motion.div>
           </motion.div>
         </div>

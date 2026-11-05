@@ -37,7 +37,7 @@ const spot: CSSProperties = {
 };
 
 export const FOIL: Record<FoilEffect, { k: number; spot: boolean; layer: CSSProperties }> = {
-  // Brasa: faixas quentes (vermelho → mostarda) que correm com o ponteiro
+  // Faixas quentes (vermelho → mostarda) que correm com o ponteiro
   ember: {
     k: 0.7,
     spot: true,
@@ -145,7 +145,7 @@ export function HoloFlipCard({
 }: {
   front: (api: FlipApi) => ReactNode;
   back: (api: FlipApi) => ReactNode;
-  /** Nome acessível do card (ex.: "Smash Duplo, R$ 38,90"). */
+  /** Nome acessível do card (ex.: "Street Bacon, R$ 38,00"). */
   label: string;
   effect?: FoilEffect;
   /** Força do brilho no hover, 0..1. */

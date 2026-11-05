@@ -1,6 +1,5 @@
 import { AnimatePresence, motion } from "motion/react";
-import { ArrowLeft, ArrowRight, BadgePercent, Clock, Minus, Plus, ShoppingBag, Truck, X } from "lucide-react";
-import { useState } from "react";
+import { ArrowLeft, ArrowRight, Clock, Minus, Plus, ShoppingBag, Truck } from "lucide-react";
 import { useCart } from "@/components/cart/cart-context";
 import { MENU_BY_ID } from "@/data/menu";
 import { useOpenStatus } from "@/hooks/use-time";
@@ -31,45 +30,29 @@ export function OrderSummary({
   step,
   totals,
   mode,
-  coupon,
-  onCoupon,
   onNext,
   onBack,
 }: {
   step: Step;
   totals: Totals;
   mode: Mode;
-  coupon: string | null;
-  onCoupon: (c: string | null) => void;
   onNext: () => void;
   onBack: () => void;
 }) {
   const { items, change, count, add, bump } = useCart();
   const status = useOpenStatus();
   const entries = Object.entries(items);
-  const missing = CONFIG.freeShipping - totals.subtotal;
-  const progress = Math.min(1, totals.subtotal / CONFIG.freeShipping);
-  const [code, setCode] = useState("");
-  const [codeError, setCodeError] = useState(false);
 
-  // Upsell: sugere o que falta (acompanhamento, depois bebida). Combo já tem tudo.
+  // Sugestão: o que falta no pedido (porção, depois bebida).
   const cats = new Set(entries.map(([id]) => MENU_BY_ID[id]?.cat));
   const suggestion =
-    step === 0 && entries.length && !cats.has("combo")
-      ? !cats.has("side")
-        ? MENU_BY_ID["fritas"]
-        : !cats.has("drink")
-          ? MENU_BY_ID["shake"]
+    step === 0 && entries.length
+      ? !cats.has("porcao")
+        ? MENU_BY_ID["fritas-250g"]
+        : !cats.has("drink") && !cats.has("beer")
+          ? MENU_BY_ID["coca-lata"]
           : null
       : null;
-
-  const apply = () => {
-    if (code.trim().toUpperCase() === CONFIG.coupon) {
-      onCoupon(CONFIG.coupon);
-      setCode("");
-      setCodeError(false);
-    } else setCodeError(true);
-  };
 
   const s = step as 0 | 1 | 2 | 3;
 
@@ -102,25 +85,17 @@ export function OrderSummary({
 
       <div className="border-b border-cream/10 px-6 py-4">
         <p className="flex items-center gap-2 text-sm text-smoke">
-          <Truck size={16} className="text-mustard" />
+          <Truck size={16} className="shrink-0 text-mustard" />
           {mode === "pickup" ? (
-            <b className="text-cream">Retirada no balcão, sem taxa</b>
-          ) : missing > 0 ? (
-            <>
-              Faltam <b className="text-cream">{brl(missing)}</b> para frete grátis
-            </>
+            <span>
+              <b className="text-cream">Retirada em ~{CONFIG.pickupMin} min</b> · sem taxa
+            </span>
           ) : (
-            <b className="text-mustard">Frete grátis garantido</b>
+            <span>
+              <b className="text-cream">Entrega em ~{CONFIG.deliveryMin} min</b> · taxa combinada no WhatsApp
+            </span>
           )}
         </p>
-        <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-char">
-          <motion.div
-            className="h-full origin-left rounded-full bg-mustard"
-            initial={false}
-            animate={{ scaleX: mode === "pickup" ? 1 : progress }}
-            transition={{ duration: 0.6, ease: EASE }}
-          />
-        </div>
       </div>
 
       <ul className="max-h-[38vh] overflow-y-auto px-5 py-1 sm:px-6 lg:max-h-[30vh]">
@@ -196,56 +171,6 @@ export function OrderSummary({
       </AnimatePresence>
 
       <div className="border-t border-cream/10 px-6 py-5">
-        {/* Cupom */}
-        <AnimatePresence mode="wait" initial={false}>
-          {coupon ? (
-            <motion.div
-              key="on"
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              className="mb-4 flex items-center justify-between rounded-2xl border border-dashed border-mustard/50 bg-mustard/10 px-4 py-3 text-sm"
-            >
-              <span className="flex items-center gap-2 font-semibold text-mustard">
-                <BadgePercent size={16} /> {coupon} · {Math.round(CONFIG.couponPct * 100)}% off
-              </span>
-              <button onClick={() => onCoupon(null)} aria-label="Remover cupom" className="text-cream/50 transition hover:text-cream">
-                <X size={16} />
-              </button>
-            </motion.div>
-          ) : (
-            <motion.form
-              key="off"
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0, x: codeError ? [0, -8, 8, -5, 5, 0] : 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.4 }}
-              onSubmit={(e) => {
-                e.preventDefault();
-                apply();
-              }}
-              className="mb-4"
-            >
-              <div className={cn("flex rounded-full border bg-char p-1 transition", codeError ? "border-sauce" : "border-cream/10 focus-within:border-mustard")}>
-                <input
-                  value={code}
-                  onChange={(e) => {
-                    setCode(e.target.value);
-                    setCodeError(false);
-                  }}
-                  placeholder="Cupom de desconto"
-                  aria-label="Cupom de desconto"
-                  className="min-w-0 flex-1 bg-transparent px-4 text-base uppercase outline-none placeholder:normal-case placeholder:text-cream/35"
-                />
-                <button type="submit" className="rounded-full bg-cream px-4 py-2 text-xs font-bold uppercase tracking-wide text-ink transition hover:bg-mustard">
-                  Aplicar
-                </button>
-              </div>
-              {codeError && <p className="mt-2 px-4 text-xs text-sauce">Cupom inválido</p>}
-            </motion.form>
-          )}
-        </AnimatePresence>
-
         <dl className="space-y-2 text-sm">
           <div className="flex justify-between text-cream/70">
             <dt>Subtotal</dt>
@@ -253,19 +178,9 @@ export function OrderSummary({
               <Amount value={totals.subtotal} />
             </dd>
           </div>
-          <AnimatePresence initial={false}>
-            {totals.discount > 0 && (
-              <motion.div key="d" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="flex justify-between text-mustard">
-                <dt>Cupom</dt>
-                <dd>
-                  −<Amount value={totals.discount} />
-                </dd>
-              </motion.div>
-            )}
-          </AnimatePresence>
           <div className="flex justify-between text-cream/70">
             <dt>{mode === "pickup" ? "Retirada" : "Entrega"}</dt>
-            <dd>{totals.fee ? <Amount value={totals.fee} /> : <span className="text-mustard">grátis</span>}</dd>
+            <dd className={totals.feePending ? "text-cream/50" : "text-mustard"}>{totals.feePending ? "a combinar" : "sem taxa"}</dd>
           </div>
           <div className="flex items-baseline justify-between border-t border-cream/10 pt-3">
             <dt className="text-smoke">Total</dt>

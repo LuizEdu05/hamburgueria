@@ -6,8 +6,8 @@
   --color-char: #251b15;
   --color-cream: #f3e8d6;
   --color-paper: #faf4ea;
-  --color-sauce: #e1301d;
-  --color-sauce-deep: #b5200f;
+  --color-sauce: #8e2f7e; /* roxo do logo da Street Burger */
+  --color-sauce-deep: #6f2163;
   --color-mustard: #f5b400;
   --color-smoke: #a69584;
   /* tokens shadcn usados pelos componentes de /components/ui */

@@ -1,5 +1,5 @@
 import { AnimatePresence, motion, useMotionValueEvent, useScroll } from "motion/react";
-import { ArrowLeft, ArrowRight, BadgePercent, Menu, ShoppingBag, Truck, X } from "lucide-react";
+import { ArrowLeft, ArrowRight, MapPin, Menu, ShoppingBag, Truck, X } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { Link, useNavigate } from "react-router";
@@ -21,10 +21,10 @@ export function TopBar() {
         </span>
         <span className="hidden items-center gap-6 md:flex">
           <span className="flex items-center gap-2">
-            <Truck size={15} /> Frete grátis acima de R$ {CONFIG.freeShipping}
+            <Truck size={15} /> Entrega em ~{CONFIG.deliveryMin} min · retirada em ~{CONFIG.pickupMin} min
           </span>
           <span className="flex items-center gap-2">
-            <BadgePercent size={15} /> 1ª compra com 10% off · <b>{CONFIG.coupon}</b>
+            <MapPin size={15} /> {CONFIG.address}
           </span>
         </span>
       </div>
@@ -34,8 +34,8 @@ export function TopBar() {
 
 const NAV = [
   ["Cardápio", "#cardapio"],
-  ["Combo do dia", "#combo"],
-  ["Processo", "#processo"],
+  ["Destaque", "#combo"],
+  ["A casa", "#processo"],
   ["Avaliações", "#avaliacoes"],
   ["Onde estamos", "#local"],
 ] as const;
@@ -43,7 +43,7 @@ const NAV = [
 export function Logo({ className }: { className?: string }) {
   return (
     <Link to="/" className={cn("font-display text-[1.9rem] font-black uppercase leading-none tracking-tight", className)}>
-      Brasa<span className="mx-0.5 text-sauce">&amp;</span>Blend
+      Street<span className="ml-1.5 text-sauce">Burger</span>
     </Link>
   );
 }

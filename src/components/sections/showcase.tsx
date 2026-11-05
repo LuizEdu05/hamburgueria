@@ -45,7 +45,7 @@ export function Showcase() {
           </div>
           <Reveal className="pointer-events-auto flex flex-col items-center gap-5 px-6">
             <p className="max-w-md text-balance text-cream/70">
-              {BURGERS.length} burgers e combos, acompanhamentos e shakes. Escolha com calma na página de pedido: lá cada burger vira e mostra o que vai dentro.
+              {BURGERS.filter((i) => i.cat === "burger").length} hambúrgueres, {BURGERS.filter((i) => i.cat === "dog").length} hot dogs, porções e bebidas. Escolha com calma na página de pedido: lá cada card vira e mostra o que vai dentro.
             </p>
             <Magnetic>
               <Link to="/pedido" className="group inline-flex items-center gap-3 rounded-full bg-sauce py-4 pl-7 pr-4 font-semibold transition hover:bg-sauce-deep">

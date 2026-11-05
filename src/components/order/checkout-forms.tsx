@@ -4,7 +4,7 @@ import { useEffect, useId, type InputHTMLAttributes, type ReactNode } from "reac
 import { Link } from "react-router";
 import { MaskLine } from "@/components/ui/motion-primitives";
 import { MENU_BY_ID } from "@/data/menu";
-import { brl, cn, EASE } from "@/lib/utils";
+import { brl, cn, CONFIG, EASE } from "@/lib/utils";
 import {
   maskCep,
   maskPhone,
@@ -176,7 +176,7 @@ export function DeliveryForm({ customer: c, setCustomer, errors }: { customer: C
 
       {c.mode === "pickup" && (
         <motion.p initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mt-6 rounded-2xl border border-dashed border-cream/15 p-5 text-cream/70">
-          Retirada na Rua Exemplo, 123 — Centro. Avisamos no WhatsApp quando estiver pronto (uns 20 min).
+          Retirada na {CONFIG.address}. Avisamos no WhatsApp quando estiver pronto (uns {CONFIG.pickupMin} min).
         </motion.p>
       )}
     </div>
@@ -253,7 +253,7 @@ export function PaymentForm({ payment: p, setPayment, errors, grand }: { payment
           rows={3}
           value={p.notes}
           onChange={(e) => setPayment({ notes: e.target.value })}
-          placeholder="Ex.: Smash Duplo sem cebola, ponto da carne, interfone quebrado…"
+          placeholder="Ex.: Street Bacon sem cebola, interfone quebrado…"
           className="w-full resize-none rounded-2xl border border-cream/10 bg-coal px-5 py-4 text-cream outline-none transition placeholder:text-cream/25 focus:border-mustard"
         />
       </div>
@@ -300,7 +300,7 @@ export function Review({
           {c.name} · {c.phone}
           <br />
           <span className="text-cream/60">
-            {c.mode === "delivery" ? `${c.street}, ${c.number}${c.complement ? ` (${c.complement})` : ""} — ${c.district}` : "No balcão, Rua Exemplo, 123"}
+            {c.mode === "delivery" ? `${c.street}, ${c.number}${c.complement ? ` (${c.complement})` : ""} — ${c.district}` : `No balcão, ${CONFIG.address}`}
           </span>
         </p>
       ),
@@ -341,7 +341,7 @@ export function Review({
         ))}
       </div>
       <p className="mt-6 text-sm text-cream/50">
-        Ao enviar, o WhatsApp abre com o pedido pronto. Total de <b className="text-cream">{brl(totals.grand)}</b>. A gente responde confirmando o tempo de entrega.
+        Ao enviar, o WhatsApp abre com o pedido pronto. Itens: <b className="text-cream">{brl(totals.grand)}</b>{totals.feePending && " + taxa de entrega, que a casa confirma na resposta"}.
       </p>
     </div>
   );

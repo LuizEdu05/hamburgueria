@@ -1,7 +1,7 @@
 import { Spark } from "@/components/ui/motion-primitives";
 import { cn } from "@/lib/utils";
 
-const WORDS = ["Blend moído no dia", "Pão brioche da casa", "Smash a 250°C", "Molhos autorais", "Bacon no maple", "Nada congelado"];
+const WORDS = ["Burger de verdade", "Hambúrguer de costela", "Hot dog de 25 cm", "Porções pra dividir", "Cerveja gelada", "Centro de Jaraguá"];
 
 function Row({ reverse, outline }: { reverse?: boolean; outline?: boolean }) {
   // Lista duplicada → loop contínuo com translateX(-50%)

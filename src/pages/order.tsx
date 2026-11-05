@@ -24,7 +24,7 @@ import { Header } from "@/components/sections/header";
 import { MaskLine } from "@/components/ui/motion-primitives";
 import { MENU_BY_ID } from "@/data/menu";
 import { useOpenStatus } from "@/hooks/use-time";
-import { cn, CONFIG, EASE, whatsappLink } from "@/lib/utils";
+import { cn, EASE, whatsappLink } from "@/lib/utils";
 
 /* ---------- Topo com as etapas ---------- */
 function Stepper({ step, goTo }: { step: Step; goTo: (s: Step) => void }) {
@@ -131,38 +131,32 @@ export default function OrderPage() {
   const [customer, setCustomerState] = useState<Customer>(loadCustomer);
   const [payment, setPaymentState] = useState<Payment>({ method: "pix", change: "", notes: "" });
   const [errors, setErrors] = useState<Errors>({});
-  const [coupon, setCoupon] = useState<string | null>(null);
   const [focus, setFocus] = useState<string | null>(null);
   const [toast, setToast] = useState<string | null>(null);
   const [sent, setSent] = useState<{ code: string; link: string } | null>(null);
   const handled = useRef(false);
   const topRef = useRef<HTMLDivElement>(null);
 
-  const totals = computeTotals(cart.total, customer.mode, coupon);
+  const totals = computeTotals(cart.total, customer.mode);
 
   const notify = (text: string) => {
     setToast(text);
     setTimeout(() => setToast(null), 2600);
   };
 
-  // Links vindos da home: ?add=id (já adiciona), ?item=id (rola até o card), ?cupom=CODIGO
+  // Links vindos da home: ?add=id (já adiciona), ?item=id (rola até o card)
   useEffect(() => {
     if (handled.current) return;
     handled.current = true;
     const add = params.get("add");
     const item = params.get("item");
-    const cupom = params.get("cupom")?.toUpperCase();
     if (add && MENU_BY_ID[add]) {
       cart.add(add);
       setFocus(add);
       setTimeout(() => notify(`${MENU_BY_ID[add].name} na sacola`), 800);
     }
     if (item && MENU_BY_ID[item]) setFocus(item);
-    if (cupom === CONFIG.coupon) {
-      setCoupon(CONFIG.coupon);
-      setTimeout(() => notify(`Cupom ${CONFIG.coupon} aplicado`), add ? 3500 : 800);
-    }
-    if (add || item || cupom) setParams({}, { replace: true });
+    if (add || item) setParams({}, { replace: true });
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const setCustomer = (p: Partial<Customer>) => {
@@ -198,7 +192,7 @@ export default function OrderPage() {
     }
     if (step === 3) {
       const code = String(Math.floor(1000 + Math.random() * 9000));
-      const link = whatsappLink(buildMessage({ code, items: cart.items, totals, coupon, customer, payment, scheduled: !status.open }));
+      const link = whatsappLink(buildMessage({ code, items: cart.items, totals, customer, payment, scheduled: !status.open }));
       window.open(link, "_blank", "noopener");
       saveCustomer(customer);
       setSent({ code, link });
@@ -252,8 +246,6 @@ export default function OrderPage() {
                   step={step}
                   totals={totals}
                   mode={customer.mode}
-                  coupon={coupon}
-                  onCoupon={setCoupon}
                   onNext={next}
                   onBack={back}
                 />
