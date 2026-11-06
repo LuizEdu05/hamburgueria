@@ -23,7 +23,8 @@ function AddBar({ item, glass }: { item: MenuItem; glass?: boolean }) {
       data-no-flip
       className={cn(
         "flex shrink-0 items-center justify-between gap-2 rounded-full p-1.5 pl-5",
-        glass ? "bg-ink/65 ring-1 ring-cream/10 backdrop-blur-md" : "bg-ink text-cream",
+        // fundo sólido em vez de backdrop-blur: são 2 por card, 48 na página, pesado demais no iPhone
+        glass ? "bg-ink/85 ring-1 ring-cream/10" : "bg-ink text-cream",
       )}
     >
       <p className="flex min-w-0 items-baseline gap-2 leading-none">
@@ -73,7 +74,7 @@ export function BurgerCard({ item }: { item: MenuItem }) {
               data-no-flip
               onClick={flip}
               aria-label={`Ver ingredientes do ${item.name}`}
-              className="grid size-11 shrink-0 place-items-center rounded-full bg-ink/50 text-cream backdrop-blur-md transition hover:bg-cream hover:text-ink"
+              className="grid size-11 shrink-0 place-items-center rounded-full bg-ink/75 text-cream transition hover:bg-cream hover:text-ink"
             >
               <RotateCw size={16} className="transition-transform duration-500 group-hover/front:rotate-180" />
             </button>

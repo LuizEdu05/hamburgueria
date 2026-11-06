@@ -150,12 +150,11 @@ export function OrderMenu({ focus }: { focus: string | null }) {
               id={`item-${item.id}`}
               layout
               className="relative scroll-mt-32"
-              initial={{ opacity: 0, y: 60, rotateX: -12 }}
-              whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
+              initial={{ opacity: 0, y: 60 }}
+              whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-40px" }}
               exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.25 } }}
               transition={{ duration: 0.8, delay: (i % 2) * 0.1, ease: EASE }}
-              style={{ transformPerspective: 1000 }}
             >
               <BurgerCard item={item} />
               {focus === item.id && (

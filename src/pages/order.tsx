@@ -235,9 +235,11 @@ export default function OrderPage() {
               <AnimatePresence mode="wait">
                 <motion.div
                   key={step}
-                  initial={{ opacity: 0, x: 60, filter: "blur(6px)" }}
-                  animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
-                  exit={{ opacity: 0, x: -60, filter: "blur(6px)" }}
+                  // Sem filter/blur: o painel do cardápio tem ~17 mil px de altura e, no iPhone,
+                  // um filtro nele obriga o Safari a guardar tudo numa imagem só (~240 MB) e a aba trava.
+                  initial={{ opacity: 0, x: 60 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -60 }}
                   transition={{ duration: 0.45, ease: EASE }}
                   className="min-w-0"
                 >
