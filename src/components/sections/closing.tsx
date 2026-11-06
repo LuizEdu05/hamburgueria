@@ -5,7 +5,7 @@ import { Link, useNavigate } from "react-router";
 import { useCart } from "@/components/cart/cart-context";
 import { Magnetic, Reveal, SectionLabel, SplitWords } from "@/components/ui/motion-primitives";
 import { brl, CONFIG, whatsappLink } from "@/lib/utils";
-import { Logo } from "./header";
+import { Logo, toSacola } from "./header";
 
 /* ---------- Onde estamos ---------- */
 export function Location() {
@@ -136,7 +136,7 @@ export function MobileCartBar({ variant = "home" }: { variant?: "home" | "order"
   const { count, total } = useCart();
   const navigate = useNavigate();
   const go = () =>
-    variant === "home" ? navigate("/pedido") : document.getElementById("sacola")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    variant === "home" ? navigate("/pedido?ver=sacola") : toSacola();
   return (
     <AnimatePresence>
       {count > 0 && (

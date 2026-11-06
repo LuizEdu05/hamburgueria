@@ -51,7 +51,16 @@ export function Logo({ className }: { className?: string }) {
 const LINK_FX =
   "relative py-1 transition hover:text-cream after:absolute after:inset-x-0 after:-bottom-0.5 after:h-px after:origin-right after:scale-x-0 after:bg-mustard after:transition-transform after:duration-300 hover:after:origin-left hover:after:scale-x-100";
 
-const toSacola = () => document.getElementById("sacola")?.scrollIntoView({ behavior: "smooth", block: "start" });
+/**
+ * Pula direto para a sacola. Sem rolagem suave: no celular a sacola fica depois do
+ * cardápio inteiro (~15 mil px) e uma rolagem suave tão longa é interrompida em vários aparelhos.
+ */
+export function toSacola() {
+  const el = document.getElementById("sacola");
+  if (!el) return;
+  el.scrollIntoView({ behavior: "instant", block: "start" });
+  el.animate([{ boxShadow: "0 0 0 3px var(--color-mustard)" }, { boxShadow: "0 0 0 3px transparent" }], { duration: 1400, easing: "ease-out" });
+}
 
 /** `home`: navegação por âncoras e carrinho leva ao /pedido. `order`: volta ao site e carrinho rola até a sacola. */
 /* ---------- Menu de celular (tela cheia) ---------- */
@@ -208,7 +217,7 @@ export function Header({ variant = "home" }: { variant?: "home" | "order" }) {
         <div className="flex items-center gap-2 sm:gap-3">
           <button
             id="cart-button"
-            onClick={() => (variant === "home" ? navigate("/pedido") : toSacola())}
+            onClick={() => (variant === "home" ? navigate("/pedido?ver=sacola") : toSacola())}
             aria-label={`Abrir pedido, ${count} itens`}
             className="relative grid size-11 place-items-center rounded-full border border-cream/15 bg-coal transition hover:border-mustard"
           >

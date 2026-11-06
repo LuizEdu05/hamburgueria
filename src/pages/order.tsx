@@ -20,7 +20,7 @@ import {
 import { OrderMenu } from "@/components/order/order-menu";
 import { OrderSummary } from "@/components/order/order-summary";
 import { Footer, MobileCartBar } from "@/components/sections/closing";
-import { Header } from "@/components/sections/header";
+import { Header, toSacola } from "@/components/sections/header";
 import { MaskLine } from "@/components/ui/motion-primitives";
 import { MENU_BY_ID } from "@/data/menu";
 import { useOpenStatus } from "@/hooks/use-time";
@@ -144,7 +144,7 @@ export default function OrderPage() {
     setTimeout(() => setToast(null), 2600);
   };
 
-  // Links vindos da home: ?add=id (já adiciona), ?item=id (rola até o card)
+  // Links vindos da home: ?add=id (já adiciona), ?item=id (rola até o card), ?ver=sacola (abre na sacola)
   useEffect(() => {
     if (handled.current) return;
     handled.current = true;
@@ -156,7 +156,10 @@ export default function OrderPage() {
       setTimeout(() => notify(`${MENU_BY_ID[add].name} na sacola`), 800);
     }
     if (item && MENU_BY_ID[item]) setFocus(item);
-    if (add || item) setParams({}, { replace: true });
+    const verSacola = params.get("ver") === "sacola";
+    // espera a cortina da troca de página abrir
+    if (verSacola) setTimeout(toSacola, 900);
+    if (add || item || verSacola) setParams({}, { replace: true });
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const setCustomer = (p: Partial<Customer>) => {
